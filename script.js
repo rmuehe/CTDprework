@@ -1,46 +1,8 @@
-// Learn Fetch API in 6 minutes
-// https://www.youtube.com/watch?v=cuEtnrL9-H0
 
-// console.log("hello");
-
-// console.log(fetch("https://reqres.in/api/users/"));
-
-// fetch("https://reqres.in/api/users/"/*, {
-//     method: "POST",
-//     headers: {
-//         "Content-Type": "application/json"
-//     },
-//     body : JSON.stringify({
-//         name: "User 1"
-//     })
-// }*/)
-//     .then(res => res.json())
-//     .then(data => console.log(data));
-
-// let SWObj = [];
-
-// fetch("https://swapi.dev/api/films/")
-//     .then(res => res.json())
-//     .then(data => {
-//         // console.log(data);
-//         for (let property in data) {
-//             // SWObj.push(data[property]);
-//             console.log(property);
-//             console.log(data[property]);
-//             SWObj.push(property);
-//         }
-//     });
-//     // .then(data => SWObj = JSON.stringify(data));
-
-// console.log(SWObj);
 
 fetch("https://swapi.dev/api/films")
     .then(res => res.json())
     .then(data => console.log(data));
-
-// fetch("https://www.swapi.tech/api/films")
-//     .then(res => res.json())
-//     .then(data => console.log(data));
 
 // https://howtocreateapps.com/fetch-and-display-json-html-javascript/
 
@@ -68,54 +30,125 @@ fetch("https://swapi.dev/api/films/")
     console.log(err);
   });
 
-// function appendData(data) {
-//     var mainContainer = document.getElementById("myData");
-//     for (var i = 0; i < data.results.length; i++) {
-//         // append each title to our page
-//         var div = document.createElement("div");
-//         div.innerHTML = "Episode " 
-//             + data.results[i].episode_id 
-//             + ': ' + data.results[i].title;
-//         mainContainer.appendChild(div);
+function includesString (str, subStr) {
+    const strLen = str.length;
+    const subStrLen = subStr.length;
+
+    if (!subStrLen) return false; 
+
+    for (let i = 0; i <= strLen - subStrLen; i++) {
+        let counter = 0;
+        if (str[i] === subStr[0] ) {
+            let idx = i;
+            for (let j = 0; j < subStrLen; j++) {
+                if (str[idx] === subStr[j]) {
+                    counter++;
+                    idx++;
+                } else {
+                    break;
+                }    
+            }
+            if (counter === subStrLen) return true;
+        }
+    }
+    return false;
+}
+
+function handleHTMLArr(htmlArr) {
+    //// this seems to makes an endless call to every HTML request
+    //// don't run it.
+    // htmlArr.forEach(x => {
+    //     characterDetails(x);
+    // });
+
+    htmlArr.forEach(x => {
         
-//         var p = document.createElement("p");
-//         p.innerHTML = data.results[i].opening_crawl;
-//         mainContainer.appendChild(p);
-//     }
-// }
+        if (!(includesString(x, "people") || includesString(x, "films"))) {
+            characterDetails(x);
+        }
+    });
 
-//// Turn the Episodes into buttons.
+    // console.log(htmlArr);
+}
 
-//// renders HTML of the opening Crawl after an episode is clicked
+function htmlCheck(string) {
+    return !(string.substring(0, 4) === "http");
+}
+
+function propCheck(prop) {
+     return !(prop === "created" || prop === "edited" || prop === "url");
+ }
+
+function detailsButton(url) {
+    fetch(url)
+        .then(x => x.json())
+        .then(newObj => {
+            console.log(newObj);
+            for (property in newObj) {
+                if (typeof newObj[property] === "string") {
+                    const isHtml = !htmlCheck(newObj[property]);
+                    const isProp = propCheck(property);
+                    if (isHtml && isProp) {
+                        const button = document.createElement("button");
+                        button.innerText = `${property}`;
+                        button.setAttribute("type", "button");
+                        button.setAttribute("onclick", `characterDetails("${newObj[property]}")`)
+                        myData.append(button);
+                    }
+                }
+            }
+        })
+        .catch(err => console.log(err));
+}
 
 function characterDetails(charUrl) {
-    // const container = document.getElementById("myData");
-    // const charStats = document.createElement("div");
-    // charStats.innerText = `Birth Year: ${char.birth_year}`;
-    // container.append(charStats);
-    console.log(charUrl);
-    
-    
-    // fetch(charUrl)
-    //     .then(x => x.json())
-    //     .then(char => {
-    //         const details = document.createElement("p");
-    //         for (property in char) {
-    //             details.innerText = `${property}: ${char[property]}
-    //             `;
-    //         }
-            
-    //         myData.append(details);        
-    //     })
-    //     .catch(er => console.log(err));
-
-    
+    fetch(charUrl)
+        .then(x => x.json())
+        .then(char => {
+            const details = document.createElement("p");
+            for (property in char) {
+                if (typeof char[property] === "string") {
+                    // rename these bools
+                    const bool = htmlCheck(char[property]);
+                    const bool2 = propCheck(property);
+                    if (bool && bool2) { 
+                        details.innerText += `${property}: ${char[property]}
+                        `;
+                    }
+                    if (!bool) {    
+                        detailsButton(char[property]);
+                        // fetch(char[property])
+                        //     .then(x => x.json())
+                        //     .then(newObj => {
+                        //         console.log(newObj);
+                        //         for (property in newObj) {
+                        //             if (typeof newObj[property] === "string") {
+                        //                 const isHtml = !htmlCheck(newObj[property]);
+                        //                 const isProp = propCheck(property);
+                        //                 if (isHtml && isProp) {
+                        //                     const button = document.createElement("button");
+                        //                     button.innerText = `${property}`;
+                        //                     button.setAttribute("type", "button");
+                        //                     button.setAttribute("onclick", `characterDetails("${newObj[property]}")`)
+                        //                     myData.append(button);
+                        //                 }
+                        //             }
+                        //         }
+                        //     })
+                        //     .catch(err => console.log(err));
+                    }
+                } else if (typeof char[property] === "object") {
+                    handleHTMLArr(char[property]);
+                }
+            }
+            myData.append(details);        
+        })
+        .catch(err => console.log(err));
 }
 
 function generateCharacters(characterArr) {
-    //console.log(characterArr);
     const myData = document.getElementById("myData");
-    characterArr.forEach((x, i) => {
+    characterArr.forEach(x => {
         const button2 = document.createElement("button");
         fetch(x)
             .then(res => res.json())
@@ -123,24 +156,18 @@ function generateCharacters(characterArr) {
                 console.log(character);
                 button2.innerText = character.name;
                 button2.setAttribute("type", "button");
-                // button2.setAttribute("onclick", `characterDetails(${character.name});`);
 
-                // TODO: add event listener instead of onclick attribute.
-                button2.setAttribute("onclick", characterDetails(character.url));
-                // const details = document.createElement("p");
-                // details.innerText = ``;
-                // myData.append(details);
+                // TODO: maybe add eventListener instead of onclick attribute.
+                button2.setAttribute("onclick", `characterDetails("${character.url}")`);
             })
             .catch(err => console.log(err));
         myData.append(button2);
-
-        // button.innerText = 
     });
 }
 
+//// renders HTML of the opening Crawl after an episode is clicked
 function openCrawl(index) {
     const scroll = document.getElementsByClassName("scroll-text")[0];
-    // console.log(scroll);
     const p = document.createElement("p");
 
     fetch("https://swapi.dev/api/films/")
@@ -158,14 +185,13 @@ function openCrawl(index) {
         .catch(function (err) {
             console.log(err);
         });
-    
-    
 }
 
+//// Turn the Episodes into buttons.
 function appendData(data) {
     const mainContainer = document.getElementById("myData");
     for (let i = 0; i < data.results.length; i++) {
-        // append each title to our page
+        // append each title to the page
         const button = document.createElement("button");
         button.innerText = "Episode " 
             + data.results[i].episode_id 
@@ -174,16 +200,6 @@ function appendData(data) {
         button.setAttribute("onclick", `openCrawl(${i});`)
 
         mainContainer.appendChild(button);
-        
-        // var p = document.createElement("p");
-        // p.innerHTML = data.results[i].opening_crawl;
-        // mainContainer.appendChild(p);
     }
 }
 
-
-
-
-// fetch("https://swapi.dev/api/films")
-//     .then(res => res.json())
-//     .then(data => console.log(data));
