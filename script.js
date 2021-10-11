@@ -108,7 +108,7 @@ function characterDetails(charUrl) {
             const details = document.createElement("p");
             for (property in char) {
                 if (typeof char[property] === "string") {
-                    // rename these bools
+                    // TODO: rename these bools
                     const bool = htmlCheck(char[property]);
                     const bool2 = propCheck(property);
                     if (bool && bool2) { 
@@ -117,25 +117,6 @@ function characterDetails(charUrl) {
                     }
                     if (!bool) {    
                         detailsButton(char[property]);
-                        // fetch(char[property])
-                        //     .then(x => x.json())
-                        //     .then(newObj => {
-                        //         console.log(newObj);
-                        //         for (property in newObj) {
-                        //             if (typeof newObj[property] === "string") {
-                        //                 const isHtml = !htmlCheck(newObj[property]);
-                        //                 const isProp = propCheck(property);
-                        //                 if (isHtml && isProp) {
-                        //                     const button = document.createElement("button");
-                        //                     button.innerText = `${property}`;
-                        //                     button.setAttribute("type", "button");
-                        //                     button.setAttribute("onclick", `characterDetails("${newObj[property]}")`)
-                        //                     myData.append(button);
-                        //                 }
-                        //             }
-                        //         }
-                        //     })
-                        //     .catch(err => console.log(err));
                     }
                 } else if (typeof char[property] === "object") {
                     handleHTMLArr(char[property]);
@@ -193,7 +174,7 @@ function appendData(data) {
     for (let i = 0; i < data.results.length; i++) {
         // append each title to the page
         const button = document.createElement("button");
-        button.innerText = "Episode " 
+        button.innerHTML = "Episode " 
             + data.results[i].episode_id 
             + ': ' + data.results[i].title;
         button.setAttribute("type", "button");
@@ -201,5 +182,7 @@ function appendData(data) {
 
         mainContainer.appendChild(button);
     }
+    // const br = document.createElement("br");
+    // mainContainer.appendChild(br);
 }
 

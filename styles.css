@@ -21,6 +21,11 @@ body {
     background: linear-gradient(180deg, rgba(20,20,20,1) 40%, rgba(20,20,20,0) 100%);
 } */
 
+button {
+    position: relative;
+    z-index: 2;    
+}
+
 .wrapper {
     display: flex;
     height: 100%;
@@ -38,6 +43,7 @@ body {
     position: relative;
     animation: scroll 240s linear forwards;
     margin: 50% 0 0 0;
+    z-index: 1;
     /* transform: translateZ(-2500px) rotate(20deg);  */
 }
 
